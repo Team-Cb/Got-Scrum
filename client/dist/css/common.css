@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'gotmilk?';
+    src: url('../Phenix\ American\ Regular.ttf') format('truetype');
+}
+
+* {
+    margin: 0px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+h2, h3, h4, h5, h6, a, li, ul {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+h1 {
+    font-family: 'gotmilk?', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.draggable {
+    cursor: grab;
+}
+.draggable:active, .draggable:drop {
+    cursor: grabbing;
+}

@@ -1,0 +1,59 @@
+.index {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: white;
+}
+
+.index h1 {
+    margin-bottom: 40px;
+    border-radius: 25px;
+    font-size: 40px;
+    background: white;
+    padding: 20px;
+    width: 200px;
+    height: 50px;
+    margin-top: 50px;
+}
+
+.index label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+}
+
+.index input {
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+    width: 250px;
+    border: 1px solid black;
+    border-radius: 25px;
+}
+
+.index button {
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: 1px solid black;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.index footer {
+    margin-top: auto;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+}
+
+.index > button, .index > input, .index > h1 {
+    box-shadow:inset rgba(0, 0, 128, 0.25) 2px 2px 5px;
+}
