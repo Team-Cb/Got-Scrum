@@ -6,3 +6,4 @@ package-lock.json
 *.db
 *.zip
 *.tar.gz
+/dist/index.html

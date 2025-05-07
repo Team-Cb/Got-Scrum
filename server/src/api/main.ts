@@ -208,6 +208,9 @@ app.post("/api/deleteStory", async (inRequest: Request, inResponse: Response) =>
 app.get("/02beb6f43de7e44d0a24.ttf", (inRequest: Request, inResponse: Response) => {
     inResponse.sendFile(path.join(__dirname, "../../../client/dist/02beb6f43de7e44d0a24.ttf"));
 });
+app.get("/favicon.ico", (inRequest: Request, inResponse: Response) => {
+    inResponse.sendFile(path.join(__dirname, "../../../client/dist/favicon.ico"));
+});
 app.get("/main.js", (inRequest: Request, inResponse: Response) => {
     inResponse.sendFile(path.join(__dirname, "../../../client/dist/main.js"));
 });
