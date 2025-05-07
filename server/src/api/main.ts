@@ -76,7 +76,7 @@ wsServer.on("connection", (socket: WebSocket) => {
                 }
             }
             console.log("Everyone voted!")
-            wsServer.clients.forEach((client) => {
+            wsServer.clients.forEach((client: WebSocket) => {
                 users.forEach((user) => {
                     client.send(`voted_${user.getUID()}_${user.getPoints()}`)
                 })
@@ -127,7 +127,9 @@ wsServer.on("connection", (socket: WebSocket) => {
                 name = messageParts[2];
                 users.push(new User(uid, name));
                 wsServer.clients.forEach((inClient: WebSocket) => {
-                    inClient.send(`add-user_${uid}_${name}`);
+                    users.forEach((user: User) => {
+                        socket.send(`add-user_${user.getUID()}_${user.getName()}`);
+                    })
                 });
                 refreshClients();
                 break;
@@ -140,7 +142,8 @@ wsServer.on("connection", (socket: WebSocket) => {
                 wsServer.clients.forEach((inClient: WebSocket) => {
                     inClient.send(`remove_${uid}`)
                 })
-                refreshClients();
+                socket.close();
+                // refreshClients();
                 break;
             case "connected":
                 name = messageParts[2];

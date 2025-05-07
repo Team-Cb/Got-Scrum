@@ -67,17 +67,21 @@ const App = () => { // displays page based on functions and url
 					window.location.reload();
 					break;
 				case "add-user":
-
 					if (messageParts[1] == localStorage.getItem("UID")) {
-						if (users.at(0) && users.at(0)!.getUID() == messageParts[1]) {
-							users.shift();
-						}
+						users.forEach((user, i) => {
+							if (user.getUID() == messageParts[1]) {
+								users.splice(i, 1);
+							}
+						})
 						users.unshift(new User(messageParts[1], messageParts[2]));
 					}
 					else {
 						let need = true;
+						if (messageParts[2] == "") {
+							need = false;
+						}
 						users.forEach(user => {
-							if (messageParts[2] == "" || user.getUID() == messageParts[1]) {
+							if (user.getUID() == messageParts[1]) {
 								need = false;
 							}
 						})
