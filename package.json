@@ -8,7 +8,7 @@
     "compile": "npx tsc && node ./server/dist/api/main.js",
     "build": "npx webpack build",
     "start:dev": "npx node ./node_modules/nodemon/bin/nodemon.js -e ts,tsx,css --exec \"npm run build && npm run compile\"",
-    "start": "node ./server/dist/api/main.js"
+    "start": "npm run build && npx tsc && node ./server/dist/api/main.js"
   },
   "repository": {
     "type": "git",

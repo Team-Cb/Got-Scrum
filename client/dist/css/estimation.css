@@ -61,11 +61,11 @@
 }
 
 li .estButton {
-    font-size: 1.25rem;
+    font-size: .75rem;
     background-color: rgba(211, 211, 211, 0.211);
     margin: 0px;
-    width: 75px;
-    height: 75px;
+    width: 45px;
+    height: 60px;
     padding: 0px;
     border-radius: 10px;
     text-align: center;
@@ -243,7 +243,8 @@ header>button {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 20px;
+    /* padding: 20px; */
+    padding-top: 50px;
     margin: 0;
     gap: 20px 10px;
     margin-bottom: -80px;
@@ -438,6 +439,13 @@ header>a:hover,
 #currentQueue>ul>li:hover {
     box-shadow: none;
 }
+@media only screen and (max-width: 991px) {
+    #currentQueue>div>h3 {
+        font-size: .80rem;
+        line-height: 30px;
+    }
+}
+
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {

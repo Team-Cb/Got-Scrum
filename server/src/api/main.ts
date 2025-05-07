@@ -27,7 +27,7 @@ let users: User[] = new Array();
 let consensus = (index: number) => {
     let isConsensus = true;
     let firstPoints = users.at(0)?.getPoints();
-    if (index > 0) {
+    if (index >= 0) {
         firstPoints = users.at(index)?.getPoints()
     } else if (index < users.length) { index = 0 }
     if (firstPoints == undefined) { } else if (firstPoints >= 0) {
@@ -37,7 +37,7 @@ let consensus = (index: number) => {
     } else {
         consensus(index + 1)
     }
-    if (isConsensus) {
+    if (isConsensus == true) {
         return firstPoints;
     };
 }
@@ -83,12 +83,13 @@ wsServer.on("connection", (socket: WebSocket) => {
             });
             refreshClients()
             
-            setTimeout(() => {
+            let voteTimer = setTimeout(() => {
                 users.forEach((user) => {
                     user.resetPoints();
                 })
                 refreshClients();
                 canVote = true;
+                clearTimeout(voteTimer);
             }, 10000)
 
         }

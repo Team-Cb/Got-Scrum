@@ -129,7 +129,7 @@ const CurrentQueue = (props: { sendMessage: any, storyQueue: UserStoryQueue; car
     return (
         <section id="currentQueue">
             <div>
-                <h3>Now estimating:</h3>
+                <h3>Now Estimating:</h3>
                 <h4 className="deleteParent"><Story story={currentStory} list={false} /></h4>
             </div>
             <Table />
