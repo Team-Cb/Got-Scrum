@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "npx tsc && node ./server/dist/api/main.js",
     "build": "npx webpack build",
-    "start:dev": "npm run build && npm run compile",
+    "start:dev": "npx node ./node_modules/nodemon/bin/nodemon.js -e ts,tsx,css --exec \"npm run build && npm run compile\"",
     "start": "node ./server/dist/api/main.js"
   },
   "repository": {
@@ -31,6 +31,7 @@
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@types/ws": "^8.18.1",
     "axios": "^1.8.3",
     "css-loader": "^7.1.2",
     "express": "^4.21.2",
