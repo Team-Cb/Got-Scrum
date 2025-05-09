@@ -11,10 +11,15 @@ const App = () => { // displays page based on functions and url
 	const [Name, setName] = useState("");
 	const [clickUid, setClickUid] = useState("");
 	const [allClick, setallClick] = useState("");
-	const users: User[] = [];
+	let users: User[] = [];
 	for (let i = 0; i < 6; i++) {
-		localStorage.removeItem("uid" + i);
-
+		let user = localStorage.getItem(`user${i}`)?.split("_");
+		if (user) {
+			users.push(new User(user.at(0)!, user.at(1)!,));
+			if (user.at(2)) {
+				users[i].setPoints(parseInt(user.at(2)!))
+			}
+		}
 	}
 	let connection: WebSocket;
 	if (window.location.protocol == "https:") {
@@ -67,16 +72,17 @@ const App = () => { // displays page based on functions and url
 					window.location.reload();
 					break;
 				case "add-user":
+					let need = true;
 					if (messageParts[1] == localStorage.getItem("UID")) {
-						users.forEach((user, i) => {
-							if (user.getUID() == messageParts[1]) {
-								users.splice(i, 1);
-							}
-						})
-						users.unshift(new User(messageParts[1], messageParts[2]));
+						if (users.at(0)?.getUID() == messageParts[1]) {
+							need = false;
+						}
+						if (need) {
+							users.unshift(new User(messageParts[1], messageParts[2]));
+							window.location.reload();
+						}
 					}
 					else {
-						let need = true;
 						if (messageParts[2] == "") {
 							need = false;
 						}
@@ -87,6 +93,7 @@ const App = () => { // displays page based on functions and url
 						})
 						if (need) {
 							users.push(new User(messageParts[1], messageParts[2]));
+							window.location.reload();
 						}
 					}
 					users.forEach((user, i) => {
@@ -109,18 +116,24 @@ const App = () => { // displays page based on functions and url
 					})
 					window.location.reload();
 					break;
-				case "voted":					
+				case "voted":
 					users.forEach((user, i) => {
-						if (i < 6) {
-							if (messageParts[1] == user.getUID()) {
-								user.setPoints(parseInt(messageParts[2]))
-								localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${messageParts[2]}`)
-							}
+						if (messageParts[1] == user.getUID()) {
+							user.setPoints(parseInt(messageParts[2]))
+							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${messageParts[2]}`)
 						}
 					})
+					window.location.reload()
 					break;
+				case "resetPoints":
+					users.forEach((user, i) => {
+						user.resetPoints()
+						localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${user.getPoints()}`)
+					})
+					window.location.reload();
+					break
 				default:
-					
+
 					break;
 			}
 		};

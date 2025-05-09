@@ -9,7 +9,8 @@ class StoryDataAccess {
     private constructor() {
         this.db = new DataStore({
             filename: path.join(__dirname, "stories.db"),
-            autoload: true
+            autoload: true,
+            inMemoryOnly: true,
         });
     }
 
@@ -109,7 +110,8 @@ class EstimatedStoryDataAccess {
     private constructor() {
         this.db = new DataStore({
             filename: path.join(__dirname, "estimations.db"),
-            autoload: true
+            autoload: true,
+            inMemoryOnly: true,
         });
     }
 

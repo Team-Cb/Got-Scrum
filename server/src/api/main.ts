@@ -12,7 +12,7 @@ const app: Express = express();
 let canVote = true;
 //WebSocket server
 const WSPort = 3030;
-const RESTfulPort = 8080;
+const RESTfulPort = 80;
 
 const wsServer = new WebSocket.Server({ port: WSPort }, () => {
     console.log("This sever is serving! Huzzah!");
@@ -26,18 +26,20 @@ let refreshClients = () => {
 let users: User[] = new Array();
 let consensus = (index: number) => {
     let isConsensus = true;
+    let allNeg1 = true;
     let firstPoints = users.at(0)?.getPoints();
     if (index >= 0) {
-        firstPoints = users.at(index)?.getPoints()
-    } else if (index < users.length) { index = 0 }
+        firstPoints = users.at(index)?.getPoints();
+    } else if (users && index >= users.length) { index = 0 }
     if (firstPoints == undefined) { } else if (firstPoints >= 0) {
         users.forEach((user) => {
-            isConsensus = ((user.getPoints() == firstPoints) || user.getPoints() == -1)
+            isConsensus = ((user.getPoints() == firstPoints) || user.getPoints() == -1);
+            allNeg1 = (user.getPoints() == -1);
         })
     } else {
-        consensus(index + 1)
+        consensus(index + 1);
     }
-    if (isConsensus == true) {
+    if (isConsensus == true && allNeg1 != true) {
         return firstPoints;
     };
 }
@@ -81,14 +83,15 @@ wsServer.on("connection", (socket: WebSocket) => {
                     client.send(`voted_${user.getUID()}_${user.getPoints()}`)
                 })
             });
-            refreshClients()
-            
+            // refreshClients();
             let voteTimer = setTimeout(() => {
                 users.forEach((user) => {
                     user.resetPoints();
                 })
-                refreshClients();
                 canVote = true;
+                wsServer.clients.forEach((client) => {
+                    client.send("resetPoints")
+                })
                 clearTimeout(voteTimer);
             }, 10000)
 
@@ -104,6 +107,7 @@ wsServer.on("connection", (socket: WebSocket) => {
             uid = messageParts[1];
         }
         let name: string;
+        let need;
         switch (messageType) {
             case "pong":
                 clearTimeout(tm);
@@ -126,14 +130,24 @@ wsServer.on("connection", (socket: WebSocket) => {
                 break;
             case "addUser":
                 name = messageParts[2];
-                users.push(new User(uid, name));
-                wsServer.clients.forEach((inClient: WebSocket) => {
-                    users.forEach((user: User) => {
-                        socket.send(`add-user_${user.getUID()}_${user.getName()}`);
-                    })
-                });
-                refreshClients();
-                break;
+                need = true;
+                uid = messageParts[1];
+
+                if (!uid) {
+                    need = false;
+                }
+                users.forEach((user: User) => {
+                    if (user.getUID() == uid) {
+                        need = false;
+                    }
+                })
+                    users.push(new User(uid, name));
+                    wsServer.clients.forEach((inClient: WebSocket) => {
+                        users.forEach((user: User) => {
+                            inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
+                        })
+                    });
+                break
             case "close":
                 users.forEach((user, i) => {
                     if (user.getUID() == uid) {
@@ -148,27 +162,36 @@ wsServer.on("connection", (socket: WebSocket) => {
                 break;
             case "connected":
                 name = messageParts[2];
-                users.push(new User(uid, name));
-                wsServer.clients.forEach((inClient: WebSocket) => {
-                    inClient.send(`add-user_${uid}_${name}`);
-                });
+                need = true;
+                uid = messageParts[1];
+
+                if (!uid) {
+                    need = false;
+                }
+                users.forEach((user: User) => {
+                    if (user.getUID() == uid) {
+                        need = false;
+                    }
+                })
+                if (need) {
+                    users.push(new User(uid, name));
+                    wsServer.clients.forEach((inClient: WebSocket) => {
+                        users.forEach((user: User) => {
+                            inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
+                        })
+                    });
+                }
                 break;
             default:
-
                 break;
         }
     })
     // Create unique identifier to the client
     // construct connection message and return generated pid
     const message = `connected_${uid}`;
-    
+
     // Send message to client through socket
     socket.send(message);
-    users.forEach((user, i) => {
-        wsServer.clients.forEach((inClient: WebSocket) => {
-            inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
-        });
-    })
 });
 
 
