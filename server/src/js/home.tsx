@@ -16,18 +16,18 @@ const JoinRoom = (props: { sendMessage: any }) => { // index.html
         </div>
     </>);
 }
-// const CreateRoom = (props: { sendMessage: any }) => { // create room page
-//     let sendMessage = props.sendMessage;
-//     return (<>
-//         <div className="index">
-//             <h1>Create Room</h1>
-//             <Form sendMessage={sendMessage} type="create" />
-//             <footer>
-//                 <p>Join a room for free here: <NavLink to={"/"}>Join Room</NavLink></p>
-//             </footer>
-//         </div>
-//     </>)
-// }
+const CreateRoom = (props: { sendMessage: any }) => { // create room page
+    let sendMessage = props.sendMessage;
+    return (<>
+        <div className="index">
+            <h1>Create Room</h1>
+            <Form sendMessage={sendMessage} type="create" />
+            <footer>
+                <p>Join a room for free here: <NavLink to={"/"}>Join Room</NavLink></p>
+            </footer>
+        </div>
+    </>)
+}
 const Form = (props: { sendMessage: any, type: string; }) => { // type is either create or join
     let navigate = useNavigate();
     let action: string;
@@ -50,6 +50,7 @@ const Form = (props: { sendMessage: any, type: string; }) => { // type is either
     return (
         <form onSubmit={() => {
             localStorage.setItem("name", name);
+            localStorage.setItem(`user0`, `${localStorage.getItem("UID")}_${name}_`)
             sendMessage(`addUser_${localStorage.getItem("UID")}_${name}`)
             navigate(action);
         }}>
@@ -62,4 +63,4 @@ const Form = (props: { sendMessage: any, type: string; }) => { // type is either
     );
 }
 export default JoinRoom;
-// export { CreateRoom }
+export { CreateRoom }

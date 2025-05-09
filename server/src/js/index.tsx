@@ -1,14 +1,12 @@
 import ReactDOM from "react-dom/client";
 import Estimation from "./estimation";
 import "../../../client/dist/css/common.css"
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 // import { CreateRoom } from "./home";
 import { useEffect, useState } from "react";
 import User from "./User";
 import JoinRoom from "./home";
 const App = () => { // displays page based on functions and url
-	const [uid, setUid] = useState("");
-	const [Name, setName] = useState("");
 	const [clickUid, setClickUid] = useState("");
 	const [allClick, setallClick] = useState("");
 	let users: User[] = [];
@@ -60,26 +58,17 @@ const App = () => { // displays page based on functions and url
 				case "estimated":
 					setallClick(messageParts[1]);
 					break;
-				case "name":
-					const storedName = localStorage.getItem("name")
-					if (storedName == null) {
-						setName("Unspecified");
-					} else {
-						setName(storedName);
-					}
-					break;
 				case "refresh":
 					window.location.reload();
 					break;
 				case "add-user":
 					let need = true;
 					if (messageParts[1] == localStorage.getItem("UID")) {
-						if (users.at(0)?.getUID() == messageParts[1]) {
+						if (users.at(0)?.getUID() == messageParts[1] || users.at(0)?.getName() == "") {
 							need = false;
 						}
 						if (need) {
 							users.unshift(new User(messageParts[1], messageParts[2]));
-							window.location.reload();
 						}
 					}
 					else {
@@ -93,7 +82,6 @@ const App = () => { // displays page based on functions and url
 						})
 						if (need) {
 							users.push(new User(messageParts[1], messageParts[2]));
-							window.location.reload();
 						}
 					}
 					users.forEach((user, i) => {
@@ -101,6 +89,9 @@ const App = () => { // displays page based on functions and url
 							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_`)
 						}
 					})
+					if (need) {
+						window.location.reload();
+					}
 					break;
 				case "remove":
 					users.forEach((user, i) => {
@@ -150,6 +141,7 @@ const App = () => { // displays page based on functions and url
 				<Route path="/" element={<JoinRoom sendMessage={sendMessage} />} />
 				{/* <Route path="/create-room" element={<CreateRoom sendMessage={sendMessage} />} /> */}
 				<Route path="/estimate" element={<Estimation sendMessage={sendMessage} />} />
+				<Route path="*" element={<Navigate to="/" />} />
 			</Routes>
 		</BrowserRouter>
 	)

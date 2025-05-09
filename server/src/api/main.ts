@@ -12,7 +12,7 @@ const app: Express = express();
 let canVote = true;
 //WebSocket server
 const WSPort = 3030;
-const RESTfulPort = 80;
+const RESTfulPort = 8080;
 
 const wsServer = new WebSocket.Server({ port: WSPort }, () => {
     console.log("This sever is serving! Huzzah!");
@@ -83,7 +83,6 @@ wsServer.on("connection", (socket: WebSocket) => {
                     client.send(`voted_${user.getUID()}_${user.getPoints()}`)
                 })
             });
-            // refreshClients();
             let voteTimer = setTimeout(() => {
                 users.forEach((user) => {
                     user.resetPoints();
@@ -142,11 +141,13 @@ wsServer.on("connection", (socket: WebSocket) => {
                     }
                 })
                     users.push(new User(uid, name));
-                    wsServer.clients.forEach((inClient: WebSocket) => {
-                        users.forEach((user: User) => {
-                            inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
-                        })
-                    });
+                    setTimeout(() => {
+                        wsServer.clients.forEach((inClient: WebSocket) => {
+                            users.forEach((user: User) => {
+                                inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
+                            })
+                        });    
+                    }, 250 )
                 break
             case "close":
                 users.forEach((user, i) => {
