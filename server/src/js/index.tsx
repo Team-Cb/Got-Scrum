@@ -11,13 +11,9 @@ const App = () => { // displays page based on functions and url
 	const [allClick, setallClick] = useState("");
 	let users: User[] = [];
 	for (let i = 0; i < 6; i++) {
-		let user = localStorage.getItem(`user${i}`)?.split("_");
-		if (user) {
-			users.push(new User(user.at(0)!, user.at(1)!,));
-			if (user.at(2)) {
-				users[i].setPoints(parseInt(user.at(2)!))
-			}
-		}
+		if (localStorage.getItem(`user${i}`)) {
+			users.push(JSON.parse(localStorage.getItem(`user${i}`)!) as User);
+		} else users.push(new User("", ""))
 	}
 	let connection: WebSocket;
 	if (window.location.protocol == "https:") {
@@ -64,7 +60,7 @@ const App = () => { // displays page based on functions and url
 				case "add-user":
 					let need = true;
 					if (messageParts[1] == localStorage.getItem("UID")) {
-						if (users.at(0)?.getUID() == messageParts[1] || users.at(0)?.getName() == "") {
+						if (users.at(0)?.uid == messageParts[1] || users.at(0)?.name == "") {
 							need = false;
 						}
 						if (need) {
@@ -86,7 +82,7 @@ const App = () => { // displays page based on functions and url
 					}
 					users.forEach((user, i) => {
 						if (i < 6) {
-							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_`)
+							localStorage.setItem(`user${i}`, JSON.stringify(user))
 						}
 					})
 					if (need) {
@@ -102,7 +98,7 @@ const App = () => { // displays page based on functions and url
 					})
 					users.forEach((user, i) => {
 						if (i < 6) {
-							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_`)
+							localStorage.setItem(`user${i}`, JSON.stringify(user))
 						}
 					})
 					window.location.reload();
@@ -111,15 +107,15 @@ const App = () => { // displays page based on functions and url
 					users.forEach((user, i) => {
 						if (messageParts[1] == user.getUID()) {
 							user.setPoints(parseInt(messageParts[2]))
-							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${messageParts[2]}`)
+							localStorage.setItem(`user${i}`, JSON.stringify(user))
 						}
 					})
 					window.location.reload()
 					break;
 				case "resetPoints":
 					users.forEach((user, i) => {
-						user.resetPoints()
-						localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${user.getPoints()}`)
+						user.points = -2
+						localStorage.setItem(`user${i}`, JSON.stringify(user))
 					})
 					window.location.reload();
 					break

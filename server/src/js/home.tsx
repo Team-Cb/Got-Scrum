@@ -1,5 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../../client/dist/css/index.css";
+import User from "./User";
+let UID = localStorage.getItem("UID");
 const JoinRoom = (props: { sendMessage: any }) => { // index.html
     let uid = localStorage.getItem("UID");
     localStorage.clear();
@@ -50,7 +52,7 @@ const Form = (props: { sendMessage: any, type: string; }) => { // type is either
     return (
         <form onSubmit={() => {
             localStorage.setItem("name", name);
-            localStorage.setItem(`user0`, `${localStorage.getItem("UID")}_${name}_`)
+            localStorage.setItem(`user0`, JSON.stringify(new User(UID!, name)))
             sendMessage(`addUser_${localStorage.getItem("UID")}_${name}`)
             navigate(action);
         }}>
