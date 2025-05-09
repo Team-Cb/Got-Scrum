@@ -21,7 +21,12 @@ const fetch = axios.create({
     timeout: 30000 // timeout in ms for http requests
 });
 const Estimation = (props: { sendMessage: any }) => { // returns Estimation page
+
     let navigate = useNavigate();
+    let name = localStorage.getItem("name");
+    if (!name) {
+        window.location.replace("")
+    }
     let sendMessage = props.sendMessage;
 
     return (<>
