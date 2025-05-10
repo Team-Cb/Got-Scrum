@@ -11,9 +11,13 @@ const App = () => { // displays page based on functions and url
 	const [allClick, setallClick] = useState("");
 	let users: User[] = [];
 	for (let i = 0; i < 6; i++) {
-		if (localStorage.getItem(`user${i}`)) {
-			users.push(JSON.parse(localStorage.getItem(`user${i}`)!) as User);
-		} else users.push(new User("", ""))
+		let user = localStorage.getItem(`user${i}`)?.split("_");
+		if (user) {
+			users.push(new User(user.at(0)!, user.at(1)!,));
+			if (user.at(2)) {
+				users[i].setPoints(parseInt(user.at(2)!))
+			}
+		}
 	}
 	let connection: WebSocket;
 	if (window.location.protocol == "https:") {
@@ -31,6 +35,7 @@ const App = () => { // displays page based on functions and url
 		};
 		// Handle server message
 		connection.onmessage = (inMessage: any) => {
+			console.log(inMessage);
 			// Split message into underscores
 			const messageParts: string[] = inMessage.data.split("_");
 			// index 0 is message type
@@ -60,7 +65,7 @@ const App = () => { // displays page based on functions and url
 				case "add-user":
 					let need = true;
 					if (messageParts[1] == localStorage.getItem("UID")) {
-						if (users.at(0)?.uid == messageParts[1] || users.at(0)?.name == "") {
+						if (users.at(0)?.getUID() == messageParts[1]) {
 							need = false;
 						}
 						if (need) {
@@ -82,7 +87,7 @@ const App = () => { // displays page based on functions and url
 					}
 					users.forEach((user, i) => {
 						if (i < 6) {
-							localStorage.setItem(`user${i}`, JSON.stringify(user))
+							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_`)
 						}
 					})
 					if (need) {
@@ -98,7 +103,7 @@ const App = () => { // displays page based on functions and url
 					})
 					users.forEach((user, i) => {
 						if (i < 6) {
-							localStorage.setItem(`user${i}`, JSON.stringify(user))
+							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_`)
 						}
 					})
 					window.location.reload();
@@ -107,15 +112,15 @@ const App = () => { // displays page based on functions and url
 					users.forEach((user, i) => {
 						if (messageParts[1] == user.getUID()) {
 							user.setPoints(parseInt(messageParts[2]))
-							localStorage.setItem(`user${i}`, JSON.stringify(user))
+							localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${messageParts[2]}`)
 						}
 					})
 					window.location.reload()
 					break;
 				case "resetPoints":
 					users.forEach((user, i) => {
-						user.points = -2
-						localStorage.setItem(`user${i}`, JSON.stringify(user))
+						user.resetPoints()
+						localStorage.setItem(`user${i}`, `${user.getUID()}_${user.getName()}_${user.getPoints()}`)
 					})
 					window.location.reload();
 					break

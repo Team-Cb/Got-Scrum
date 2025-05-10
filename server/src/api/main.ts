@@ -12,7 +12,7 @@ const app: Express = express();
 let canVote = true;
 //WebSocket server
 const WSPort = 3030;
-const RESTfulPort = 8081;
+const RESTfulPort = 8080;
 
 const wsServer = new WebSocket.Server({ port: WSPort }, () => {
     console.log("This sever is serving! Huzzah!");
@@ -45,6 +45,35 @@ let consensus = (index: number) => {
 }
 
 
+const addUser = (messageParts: string[], socket: WebSocket) => {
+    let name = messageParts[2];
+    let need = true;
+    let uid = messageParts[1];
+
+    if (!uid || !name) {
+        return;
+    }
+    users.forEach((user: User, i: number) => {
+        if (user.getUID() == uid) {
+            if (name == user.getName()) {
+                need = false;
+            } else {
+                users.splice(i, 1);
+            }
+        }
+    })
+    if (need) {
+        users.push(new User(uid, name));
+    }
+    setTimeout(() => {
+        wsServer.clients.forEach((inClient: WebSocket) => {
+            users.forEach((user: User) => {
+                inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
+            })
+        });
+    }, 750)
+
+}
 
 // Observer Pattern
 wsServer.on("connection", (socket: WebSocket) => {
@@ -96,6 +125,7 @@ wsServer.on("connection", (socket: WebSocket) => {
 
         }
     }
+
     console.log("Client connected...");
     let uid: string = `uid${new Date().getTime()}`;
     socket.on("message", (inMessage: string) => {
@@ -128,26 +158,10 @@ wsServer.on("connection", (socket: WebSocket) => {
 
                 break;
             case "addUser":
-                name = messageParts[2];
-                need = true;
-                uid = messageParts[1];
-
-                if (!uid) {
-                    need = false;
-                }
-                users.forEach((user: User) => {
-                    if (user.getUID() == uid) {
-                        need = false;
-                    }
-                })
-                    users.push(new User(uid, name));
-                    setTimeout(() => {
-                        wsServer.clients.forEach((inClient: WebSocket) => {
-                            users.forEach((user: User) => {
-                                inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
-                            })
-                        });    
-                    }, 250 )
+                addUser(messageParts, socket);
+                setTimeout(() => {
+                    refreshClients();
+                }, 1000)
                 break
             case "close":
                 users.forEach((user, i) => {
@@ -162,26 +176,12 @@ wsServer.on("connection", (socket: WebSocket) => {
                 // refreshClients();
                 break;
             case "connected":
-                name = messageParts[2];
-                need = true;
-                uid = messageParts[1];
-
-                if (!uid) {
-                    need = false;
-                }
+                addUser(messageParts, socket);
                 users.forEach((user: User) => {
-                    if (user.getUID() == uid) {
-                        need = false;
-                    }
+                    socket.send(`add-user_${user.getUID()}_${user.getName()}`);
+                    console.log(user + " sent");
+
                 })
-                if (need) {
-                    users.push(new User(uid, name));
-                    wsServer.clients.forEach((inClient: WebSocket) => {
-                        users.forEach((user: User) => {
-                            inClient.send(`add-user_${user.getUID()}_${user.getName()}`);
-                        })
-                    });
-                }
                 break;
             default:
                 break;

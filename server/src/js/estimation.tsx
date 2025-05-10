@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom"
 import { Card, Cards } from "./Cards"
 import Popup from "reactjs-popup"
 import 'reactjs-popup/dist/index.css'
-import User from "./User"
 let storyQueue: UserStoryQueue = new UserStoryQueue();
 let estimations: UserStoryQueue = new UserStoryQueue();
 let cards: Cards = new Cards();
@@ -56,7 +55,7 @@ const Player = (props: { name: string, id: string, points: string }) => {
                 </svg>
             </div>
         )
-    } else {
+    } else {        
         if (parseInt(props.points) == -1) {
             return (
                 <div className="player" id={props.id}>
@@ -91,20 +90,25 @@ const Player = (props: { name: string, id: string, points: string }) => {
 }
 const Table = () => {
     let average;
-    let players: User[] = [];
-    for (let i = 0; i < 6; i++) {
-        let player = (JSON.parse(localStorage.getItem(`user${i}`)!) as User)
-        if (player) {
-            players.push(player);
-            console.log(player);
-        } else {
-            players.push(new User("", ""));
-        }
-    }
-    console.log(players);
+    let players: string[][];
+    players = [[localStorage.getItem("user0")?.split("_").at(1)!, localStorage.getItem("user0")?.split("_").at(2)!], [localStorage.getItem("user1")?.split("_").at(1)!, localStorage.getItem("user1")?.split("_").at(2)!], [localStorage.getItem("user2")?.split("_").at(1)!, localStorage.getItem("user2")?.split("_").at(2)!], [localStorage.getItem("user3")?.split("_").at(1)!, localStorage.getItem("user3")?.split("_").at(2)!], [localStorage.getItem("user4")?.split("_").at(1)!, localStorage.getItem("user4")?.split("_").at(2)!], [localStorage.getItem("user5")?.split("_").at(1)!, localStorage.getItem("user5")?.split("_").at(2)!]]
 
     let numPoints = 0;
     let totalPoints = 0;
+    players.forEach((player, i) => {
+        let playerName = localStorage.getItem("user" + i)?.split("_")[1]
+        let playerPoints = localStorage.getItem("user" + i)?.split("_")[2]
+        if (playerName) {
+            player[0] = playerName;
+            if (playerPoints && parseInt(playerPoints) >= 0) {
+                player[1] = playerPoints;
+                totalPoints += parseInt(playerPoints);
+                numPoints++;
+            } else if (playerPoints && parseInt(playerPoints) == -1) {
+                player[1] = "-1";
+            }
+        }
+    })
     if (numPoints > 0) {
         average = totalPoints / numPoints
         localStorage.setItem("average", average.toString())
@@ -114,11 +118,12 @@ const Table = () => {
         <>
             <h4 id="avg">{average ? average : "AVG"}</h4>
             <div id="players">
-                {players.map((player, i) => {
-                    return (
-                        <Player key={`user${i}`} name={player.name} points={player.points.toString()} id={`player${i+1}`} />
-                    )
-                })}
+                <Player name={players[0][0]} points={players[0][1]} id="player1" />
+                <Player name={players[1][0]} points={players[1][1]} id="player2" />
+                <Player name={players[2][0]} points={players[2][1]} id="player3" />
+                <Player name={players[3][0]} points={players[3][1]} id="player4" />
+                <Player name={players[4][0]} points={players[4][1]} id="player5" />
+                <Player name={players[5][0]} points={players[5][1]} id="player6" />
             </div>
 
         </>
@@ -295,15 +300,12 @@ const Estimations = (props: { estimations: UserStoryQueue }) => { // returns alr
 const EstimationButton = (props: { sendMessage: any, card: Card }) => { // returns a single estimation card button
         let sendMessage = props.sendMessage;
     const submit = () => {
-            let UID = localStorage.getItem("UID");
-            let Name = localStorage.getItem("name");
-            let user = new User(UID!, Name!);
-            user.setPoints(props.card.getValue());
-            
-            localStorage.setItem("user0", JSON.stringify(user));
-            // change to websocket send message
-            sendMessage(`voted_${localStorage.getItem("UID")}_${props.card.getValue()}`);
-            window.location.reload();
+        let UID = localStorage.getItem("UID");
+        let Name = localStorage.getItem("name");
+        localStorage.setItem("user0", `${UID}_${Name}_${props.card.getValue()}`)
+        // change to websocket send message
+        sendMessage(`voted_${localStorage.getItem("UID")}_${props.card.getValue()}`);
+        window.location.reload();
     }
     if (props.card.getValue() >= 0) {
         return (

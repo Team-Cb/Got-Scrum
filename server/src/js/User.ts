@@ -1,7 +1,7 @@
 class User {
-    public name: string;
-    public uid: string;
-    public points: number = -2;
+    private name: string;
+    private uid: string;
+    private points: number = -2;
     constructor(uid: string, name: string) {
         this.name = name;
         this.uid = uid;
