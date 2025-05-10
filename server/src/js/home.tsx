@@ -50,18 +50,17 @@ const Form = (props: { sendMessage: any, type: string; }) => { // type is either
         return null;
     }
     return (
-        <form onSubmit={() => {
-            localStorage.setItem("name", name);
-            localStorage.setItem(`user0`, JSON.stringify(new User(UID!, name)))
-            sendMessage(`addUser_${localStorage.getItem("UID")}_${name}`)
-            navigate(action);
-        }}>
+        <div>
             <label htmlFor="name">{nameField}</label>
-            <input type="text" id="name" onChange={event => {name = event.target.value}}required/><br /><br />
+            <input type="text" id="name" onChange={event => { name = event.target.value }} required /><br /><br />
             {/* <label htmlFor="roomnum">Room ID:</label>
             <input type="text" id="roomnum" required /><br /><br /> */}
-            <button type="submit">{buttonText}</button>
-        </form>
+            <button onClick={() => {
+                localStorage.setItem("name", name);
+                localStorage.setItem(`user0`, JSON.stringify(new User(UID!, name)))
+                navigate(action);
+            }} type="submit">{buttonText}</button>
+        </div>
     );
 }
 export default JoinRoom;

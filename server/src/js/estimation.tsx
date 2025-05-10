@@ -125,18 +125,16 @@ const Table = () => {
     )
 }
 const CurrentQueue = (props: { sendMessage: any, storyQueue: UserStoryQueue; cards: Cards }) => { // returns middle section of Estimation page
-    const [currentCards, setCards] = React.useState(props.cards);
-    useEffect(() => { // gets estimated stories
-        fetch.get("cards").then((response) => {
-            setCards(response.data);
-            response.data.forEach((card: any) => {
-                cards.addCard(new Card(card.cardValue))
-            }
-            )
-        })
-    }, [])
+    // useEffect(() => { // gets estimated stories
+    //     fetch.get("cards").then((response) => {
+    //         cards = new Cards()
+    //         response.data.forEach((card: any) => {
+    //             cards.addCard(new Card(card.cardValue))
+    //         })
+    //     })
+    // }, [])
     currentStory = storyQueue.findAt(0);
-    let cardsList = cards.getCards();
+    let cardsList: Card[] = [new Card(-1), new Card(3), new Card(5), new Card(13), new Card(20), new Card(100), new Card(40), new Card(1), new Card(2), new Card(8)];
     let sendMessage = props.sendMessage;
     cardsList.sort(function (a: any, b: any) { return a.cardValue - b.cardValue })
     const ListCards = () => { // returns Estimation card buttons
@@ -295,17 +293,17 @@ const Estimations = (props: { estimations: UserStoryQueue }) => { // returns alr
     )
 }
 const EstimationButton = (props: { sendMessage: any, card: Card }) => { // returns a single estimation card button
-    let sendMessage = props.sendMessage;
+        let sendMessage = props.sendMessage;
     const submit = () => {
-        let UID = localStorage.getItem("UID");
-        let Name = localStorage.getItem("name");
-        let user = new User(UID!, Name!);
-        user.setPoints(props.card.getValue());
-
-        localStorage.setItem("user0", JSON.stringify(user));
-        // change to websocket send message
-        sendMessage(`voted_${localStorage.getItem("UID")}_${props.card.getValue()}`);
-        window.location.reload();
+            let UID = localStorage.getItem("UID");
+            let Name = localStorage.getItem("name");
+            let user = new User(UID!, Name!);
+            user.setPoints(props.card.getValue());
+            
+            localStorage.setItem("user0", JSON.stringify(user));
+            // change to websocket send message
+            sendMessage(`voted_${localStorage.getItem("UID")}_${props.card.getValue()}`);
+            window.location.reload();
     }
     if (props.card.getValue() >= 0) {
         return (

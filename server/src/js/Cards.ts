@@ -14,7 +14,7 @@ class Card {
     }
 }
 class Cards {
-    private cards: Card[];
+    public cards: Card[];
     constructor() {
         this.cards = [];
     }

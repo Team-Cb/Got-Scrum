@@ -127,8 +127,10 @@ const App = () => { // displays page based on functions and url
 	}, []);
 
 	const sendMessage = (message: string) => {
-		console.log(`WS message sent: ${message}`);
-		connection.send(message);
+		if (connection.readyState == connection.OPEN) {
+			console.log(`WS message sent: ${message}`);
+			connection.send(message);
+		}
 	};
 
 	return (
