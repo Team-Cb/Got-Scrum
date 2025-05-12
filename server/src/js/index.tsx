@@ -35,7 +35,6 @@ const App = () => { // displays page based on functions and url
 		};
 		// Handle server message
 		connection.onmessage = (inMessage: any) => {
-			console.log(inMessage);
 			// Split message into underscores
 			const messageParts: string[] = inMessage.data.split("_");
 			// index 0 is message type
@@ -133,7 +132,6 @@ const App = () => { // displays page based on functions and url
 
 	const sendMessage = (message: string) => {
 		if (connection.readyState == connection.OPEN) {
-			console.log(`WS message sent: ${message}`);
 			connection.send(message);
 		}
 	};

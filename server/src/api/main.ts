@@ -74,13 +74,13 @@ const addUser = (messageParts: string[], socket: WebSocket) => {
     }, 750)
 
 }
-let pong: NodeJS.Timeout ;
+let pong: NodeJS.Timeout;
 let removeUser = (userID: string) => {
     users.forEach((user, i) => {
-        if (user.getUID() ==userID) {
+        if (user.getUID() == userID) {
             users.splice(i, 1)
         }
-    })    
+    })
     wsServer.clients.forEach((inClient: WebSocket) => {
         inClient.send(`remove_${userID}`)
     })
@@ -124,10 +124,12 @@ wsServer.on("connection", (socket: WebSocket) => {
             console.log("Everyone voted!")
             wsServer.clients.forEach((client: WebSocket) => {
                 users.forEach((user) => {
-                    client.send(`voted_${user.getUID()}_${user.getPoints()}`)
+                    setTimeout(() => {
+                        client.send(`voted_${user.getUID()}_${user.getPoints()}`)
+                    }, 500);
                 })
             });
-            let voteTimer = setTimeout(() => {
+            setTimeout(() => {
                 users.forEach((user) => {
                     user.resetPoints();
                 })
@@ -135,8 +137,7 @@ wsServer.on("connection", (socket: WebSocket) => {
                 wsServer.clients.forEach((client) => {
                     client.send("resetPoints")
                 })
-                clearTimeout(voteTimer);
-            }, 10000)
+            }, 15000)
 
         }
     }
@@ -144,8 +145,7 @@ wsServer.on("connection", (socket: WebSocket) => {
     console.log("Client connected...");
     let uid: string = `uid${new Date().getTime()}`;
     socket.on("message", (inMessage: string) => {
-        // console.log(`Message received: ${inMessage}`);
-        const messageParts: string[] = String(inMessage).split("_");
+        const messageParts: string[] = String(inMessage).split("_", 3);
         const messageType = messageParts[0];
         if (messageParts[1] != null) {
             uid = messageParts[1];
@@ -246,7 +246,7 @@ app.post("/api/deleteStory", async (inRequest: Request, inResponse: Response) =>
     // for (let index = parseInt(story.id!)+1; index <= storyCount; index++) {
     //     StoryDataAccess.getDataAccess().updateID(index, index-1);
     //     console.log("here");
-        
+
     // }
     StoryDataAccess.getDataAccess().removeID(parseInt(story.id!));
     const numberRemoved: number = await StoryDataAccess.getDataAccess().removeStory(story);

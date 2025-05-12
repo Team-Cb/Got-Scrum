@@ -20,7 +20,19 @@ const fetch = axios.create({
     timeout: 30000 // timeout in ms for http requests
 });
 const Estimation = (props: { sendMessage: any }) => { // returns Estimation page
-    const [currentQueue, setQueue] = React.useState(storyQueue);
+    const [currentEstimations, setEstimations] = React.useState();
+    useEffect(() => { // gets estimated stories
+        fetch.get("estimations").then((response) => {
+            setEstimations(response.data);
+            response.data.forEach((story: any) => {
+                estimations.addStory(new UserStory(story.name, story.description, story.id, story.storyValues))
+            }
+            )
+            estimations.getStories().sort((a, b) => parseInt(a.id!) - parseInt(b.id!))
+        })
+    }, [])
+
+    const [currentQueue, setQueue] = React.useState();
     useEffect(() => { // gets estimated stories
         fetch.get("storyQueue").then((response) => {
             setQueue(response.data);
@@ -64,7 +76,7 @@ const Player = (props: { name: string, id: string, points: string }) => {
                 </svg>
             </div>
         )
-    } else {        
+    } else {
         if (parseInt(props.points) == -1) {
             return (
                 <div className="player" id={props.id}>
@@ -260,17 +272,6 @@ const Estimations = (props: { estimations: UserStoryQueue }) => { // returns alr
         if (value <= 5) return "story-medium";
         return "story-large";
     }
-    const [currentEstimations, setEstimations] = React.useState(props.estimations);
-    useEffect(() => { // gets estimated stories
-        fetch.get("estimations").then((response) => {
-            setEstimations(response.data);
-            response.data.forEach((story: any) => {
-                estimations.addStory(new UserStory(story.name, story.description, story.id, story.storyValues))
-            }
-            )
-            estimations.getStories().sort((a, b) => parseInt(a.id!) - parseInt(b.id!))
-        })
-    }, [])
     const Estimation = (props: { userStory: UserStory | undefined }) => { // returns an already estimated story
         if (props.userStory !== undefined && props.userStory.getStoryValues() !== undefined) {
             story = new UserStory(props.userStory.toString(), props.userStory.description, props.userStory.id!, props.userStory.getStoryValues());
@@ -298,7 +299,7 @@ const Estimations = (props: { estimations: UserStoryQueue }) => { // returns alr
     )
 }
 const EstimationButton = (props: { sendMessage: any, card: Card }) => { // returns a single estimation card button
-        let sendMessage = props.sendMessage;
+    let sendMessage = props.sendMessage;
     const submit = () => {
         let UID = localStorage.getItem("UID");
         let Name = localStorage.getItem("name");
