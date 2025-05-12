@@ -20,7 +20,16 @@ const fetch = axios.create({
     timeout: 30000 // timeout in ms for http requests
 });
 const Estimation = (props: { sendMessage: any }) => { // returns Estimation page
-
+    const [currentQueue, setQueue] = React.useState(storyQueue);
+    useEffect(() => { // gets estimated stories
+        fetch.get("storyQueue").then((response) => {
+            setQueue(response.data);
+            response.data.forEach((story: any) => {
+                storyQueue.addStory(new UserStory(story.name, story.description, story.id))
+            })
+            storyQueue.getStories().sort((a, b) => parseInt(a.id!) - parseInt(b.id!));
+        })
+    }, [])
     let navigate = useNavigate();
     let name = localStorage.getItem("name");
     if (!name) {
@@ -184,16 +193,7 @@ const StoryDialogBox = () => {
     )
 }
 const StQueue = (props: { storyQueue: UserStoryQueue }) => { // returns the storyqueue section
-    const [currentQueue, setQueue] = React.useState(props.storyQueue);
-    useEffect(() => { // gets estimated stories
-        fetch.get("storyQueue").then((response) => {
-            setQueue(response.data);
-            response.data.forEach((story: any) => {
-                storyQueue.addStory(new UserStory(story.name, story.description, story.id))
-            })
-            storyQueue.getStories().sort((a, b) => parseInt(a.id!) - parseInt(b.id!));
-        })
-    }, [])
+
     const List = () => { // returns a list of stories for storyqueue
         let stories = []
         for (let index = 1; index < storyQueue.getLength() - 1; index++) {

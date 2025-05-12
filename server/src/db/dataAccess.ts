@@ -33,17 +33,24 @@ class StoryDataAccess {
         return await this.db.findAsync({});
     }
 
-    public updateID(prevID: number, ID: number)  {
+    public removeID(ID: number) {
+        for (let index = ID + 1; index <= this.db.getAllData().length; index++) {
+            StoryDataAccess.getDataAccess().updateID(index, index - 1);
+        }
+    }
+    public updateID(prevID: number, ID: number) {
         let stories = this.db.getAllData().sort((a, b) => parseInt(a.id!) - parseInt(b.id!));
         if (stories.at(ID)) {
             stories.forEach((story, i) => {
                 if (prevID < ID && story.id > prevID && story.id <= ID) {
-                    story.id = (story.id-1).toString();
+                    story.id = (story.id - 1).toString();
                 } else if (prevID > ID && story.id < prevID && story.id >= ID) {
-                    story.id = (parseInt(story.id)+1).toString();
+                    story.id = (parseInt(story.id) + 1).toString();
                 }
             })
-            stories.at(prevID)!.id = ID.toString();
+            if (stories.at(prevID)) {
+                stories.at(prevID)!.id = ID.toString();
+            }
         }
         return stories.at(ID) as UserStory;
     }
@@ -58,7 +65,7 @@ class StoryDataAccess {
 
 
     public async removeStory(story: UserStory): Promise<number> {
-        return await this.db.removeAsync({ id: story.id }, {});
+        return await this.db.removeAsync({ storyNum: story.storyNum }, {});
     }
 }
 class CardDataAccess {
