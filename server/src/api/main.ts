@@ -177,7 +177,6 @@ wsServer.on("connection", (socket: WebSocket) => {
                 addUser(messageParts, socket);
                 let add =setTimeout(() => {
                     refreshClients();
-                    clearTimeout(add);
                 }, 1000)
                 break
             case "close":

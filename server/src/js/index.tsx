@@ -82,6 +82,7 @@ const App = () => { // displays page based on functions and url
 						})
 						if (need) {
 							users.push(new User(messageParts[1], messageParts[2]));
+							window.location.reload();
 						}
 					}
 					users.forEach((user, i) => {
@@ -90,7 +91,7 @@ const App = () => { // displays page based on functions and url
 						}
 					})
 					if (need) {
-						window.location.reload();
+						// window.location.reload();
 					}
 					break;
 				case "remove":
