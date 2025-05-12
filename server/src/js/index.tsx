@@ -72,7 +72,7 @@ const App = () => { // displays page based on functions and url
 						}
 					}
 					else {
-						if (messageParts[2] == "") {
+						if (messageParts[2] == "" || messageParts[2] == undefined) {
 							need = false;
 						}
 						users.forEach(user => {

@@ -12,7 +12,7 @@ const app: Express = express();
 let canVote = true;
 //WebSocket server
 const WSPort = 3030;
-const RESTfulPort = 8080;
+const RESTfulPort = 80;
 
 const wsServer = new WebSocket.Server({ port: WSPort }, () => {
     console.log("This sever is serving! Huzzah!");
@@ -175,8 +175,9 @@ wsServer.on("connection", (socket: WebSocket) => {
                 break;
             case "addUser":
                 addUser(messageParts, socket);
-                setTimeout(() => {
+                let add =setTimeout(() => {
                     refreshClients();
+                    clearTimeout(add);
                 }, 1000)
                 break
             case "close":
@@ -230,13 +231,13 @@ app.get("/api/cards", async (inRequest: Request, inResponse: Response) => {
 app.get("/api/storyQueue", async (inRequest: Request, inResponse: Response) => {
     inResponse.type("json");
     const stories: UserStory[] = await StoryDataAccess.getDataAccess().getStories();
-    stories.forEach(story => { if (parseInt(story.id!) > storyCount) storyCount = parseInt(story.id!) + 1 })
+    stories.forEach(story => { if (parseInt(story.id!) >= storyCount) storyCount = parseInt(story.id!) + 1 })
     inResponse.json(stories);
 });
 app.get("/api/estimations", async (inRequest: Request, inResponse: Response) => {
     inResponse.type("json");
     const stories: UserStory[] = await EstimatedStoryDataAccess.getDataAccess().getStories();
-    stories.forEach(story => { if (parseInt(story.id!) > storyCount) storyCount = parseInt(story.id!) + 1 })
+    stories.forEach(story => { if (parseInt(story.id!) >= storyCount) storyCount = parseInt(story.id!) + 1 })
     inResponse.json(stories);
 })
 app.post("/api/deleteStory", async (inRequest: Request, inResponse: Response) => {
