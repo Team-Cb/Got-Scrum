@@ -12,7 +12,7 @@ const app: Express = express();
 let canVote = true;
 //WebSocket server
 const WSPort = 3030;
-const RESTfulPort = 80;
+const RESTfulPort = 8080;
 
 const wsServer = new WebSocket.Server({ port: WSPort }, () => {
     console.log("This sever is serving! Huzzah!");
